@@ -1,0 +1,88 @@
+{% extends "creditos/base.html" %}
+
+{% block title %}Mis Envíos {% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📋 Historial de mis Envíos</h2>
+
+{% if envios %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Créditos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for envio in envios %}
+                    <tr class="{% if envio.aceptado %}envio-aceptado{% elif envio.aceptado == False %}envio-rechazado{% else %}envio-pendiente{% endif %}">
+                        <td>
+                            <span class="envio-tipo 
+                                {% if envio.tipo == 'rectificacion' %}envio-rectificacion
+                                {% elif envio.tipo == 'cp' %}envio-cp
+                                {% else %}envio-meme{% endif %}">
+                                {% if envio.tipo == 'rectificacion' %}📝 Rectificación
+                                {% elif envio.tipo == 'cp' %}📚 CP
+                                {% else %}😂 Meme{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <small>{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                        </td>
+                        <td>
+                            <small>
+                                {% if envio.tipo == 'cp' %}
+                                    CP {{ envio.numero_cp }} - Ejercicio {{ envio.numero_ejercicio }}
+                                {% else %}
+                                    {{ envio.descripcion|truncatewords:10 }}
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td>
+                            {% if envio.aceptado is None %}
+                                <span class="badge bg-warning">⏳ Pendiente</span>
+                            {% elif envio.aceptado %}
+                                <span class="badge bg-success">✅ Aceptado</span>
+                            {% else %}
+                                <span class="badge bg-danger">❌ Rechazado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ envio.creditos_otorgados }}</strong>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card mt-4 bg-light">
+        <div class="card-body">
+            <h6>Estadísticas:</h6>
+            <ul class="mb-0">
+                <li>Total de envíos: <strong>{{ envios.count }}</strong></li>
+                <li>Pendientes: <strong>{% widthratio envios|dictsort:'aceptado'|length envios|length 1 %}</strong></li>
+                <li>Créditos totales otorgados: <strong>{% for envio in envios %}{% if envio.aceptado %}{{ envio.creditos_otorgados }}{% endif %}{% endfor %}</strong></li>
+            </ul>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info text-center py-5">
+        <h5>📭 No hay envíos aún</h5>
+        <p>Comienza a enviar tus rectificaciones, ejercicios CP o memes para ganar créditos.</p>
+        <a href="{% url 'estudiante_inicio' %}" class="btn btn-primary btn-custom">
+            Volver al Inicio
+        </a>
+    </div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'estudiante_inicio' %}" class="btn btn-outline-primary btn-custom">
+        ← Volver
+    </a>
+</div>
+{% endblock %}

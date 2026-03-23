@@ -1,0 +1,95 @@
+{% extends "creditos/base.html" %}
+
+{% block title %}Enviar Rectificación {% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="form-section">
+            <h2 class="mb-4">📝 Enviar Rectificación de Ejercicio</h2>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="mb-4">
+                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                        <strong>Descripción de la Rectificación</strong>
+                    </label>
+                    {{ form.descripcion }}
+                    <small class="form-text text-muted">
+                        Explica brevemente qué estás rectificando
+                    </small>
+                    {% if form.descripcion.errors %}
+                        <div class="text-danger small mt-2">
+                            {% for error in form.descripcion.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.contexto_rectificacion.id_for_label }}" class="form-label">
+                        <strong>Contexto</strong>
+                    </label>
+                    {{ form.contexto_rectificacion }}
+                    <small class="form-text text-muted">
+                        Proporciona el contexto: ¿Qué exactamente estás rectificando?
+                    </small>
+                    {% if form.contexto_rectificacion.errors %}
+                        <div class="text-danger small mt-2">
+                            {% for error in form.contexto_rectificacion.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.envio_corregido.id_for_label }}" class="form-label">
+                        <strong>¿Qué envío estás corrigiendo? (opcional)</strong>
+                    </label>
+                    {{ form.envio_corregido }}
+                    <small class="form-text text-muted">
+                        Selecciona el envío anterior que estás corrigiendo, si aplica
+                    </small>
+                    {% if form.envio_corregido.errors %}
+                        <div class="text-danger small mt-2">
+                            {% for error in form.envio_corregido.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label for="{{ form.documento_rectificacion.id_for_label }}" class="form-label">
+                        <strong>Adjuntar documento (opcional)</strong>
+                    </label>
+                    {{ form.documento_rectificacion }}
+                    <small class="form-text text-muted">
+                        Si tienes un documento que respalde tu rectificación, adjúntalo aquí
+                    </small>
+                    {% if form.documento_rectificacion.errors %}
+                        <div class="text-danger small mt-2">
+                            {% for error in form.documento_rectificacion.errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary btn-custom">
+                        📤 Enviar Rectificación
+                    </button>
+                    <a href="{% url 'estudiante_inicio' %}" class="btn btn-outline-secondary btn-custom">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="alert alert-info mt-4">
+            <h6 class="alert-heading">💡 Consejos:</h6>
+            <ul class="mb-0">
+                <li>Sé claro y específico en tu descripción</li>
+                <li>Proporciona el contexto necesario para que el profesor entienda fácilmente</li>
+                <li>El profesor revisará tu rectificación y decidirá cuántos créditos otorgar</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

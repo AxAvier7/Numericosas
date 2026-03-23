@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sistema de Créditos{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% load custom_filters %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 60px;
+        }
+        
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+            margin-bottom: 20px;
+        }
+        
+        .btn-custom {
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 500;
+        }
+        
+        .ranking-item {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ranking-item.actual {
+            background-color: #e3f2fd;
+            font-weight: bold;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .ranking-numero {
+            width: 40px;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .ranking-nombre {
+            flex-grow: 1;
+            margin: 0 20px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .ranking-creditos {
+            min-width: 120px;
+            text-align: right;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .badge-custom {
+            padding: 8px 12px;
+            font-size: 0.85rem;
+        }
+        
+        .envio-tipo {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        
+        .envio-rectificacion {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .envio-cp {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .envio-meme {
+            background-color: #f8f9fa;
+            color: #383d41;
+            border: 1px solid #dee2e6;
+        }
+        
+        .envio-pendiente {
+            opacity: 0.7;
+        }
+        
+        .envio-aceptado {
+            border-left: 4px solid #28a745;
+        }
+        
+        .envio-rechazado {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 0;
+        }
+        
+        .form-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+        }
+        
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .btn-primary:hover {
+            background-color: #564fa8;
+            border-color: #564fa8;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">📚 Sistema de Créditos</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user|is_student %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'estudiante_inicio' %}">Inicio</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'historial_envios' %}">Mis Envíos</a>
+                            </li>
+                        {% elif user|is_teacher %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'profesor_inicio' %}">Pendientes</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'historial_revisiones' %}">Historial</a>
+                            </li>
+                        {% endif %}
+                        <li class="nav-item">
+                            <span class="nav-link">👤 {{ user.get_full_name|default:user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Salir</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Ingresar</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-4 mt-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2026 Sistema de Créditos. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

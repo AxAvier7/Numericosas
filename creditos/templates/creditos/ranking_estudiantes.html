@@ -1,0 +1,78 @@
+{% extends "creditos/base.html" %}
+
+{% block title %}Ranking de Estudiantes{% endblock %}
+
+{% block content %}
+<div class="hero bg-dark">
+    <h1>🏆 Ranking de Estudiantes</h1>
+    <p>Clasificación por créditos acumulados</p>
+</div>
+
+<!-- Resumen -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card border-left-success">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Total de Estudiantes</h6>
+                <h2 class="text-success">{{ total_estudiantes }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de ranking -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">📊 Clasificación General</h5>
+    </div>
+    <div class="card-body p-0">
+        {% if ranking %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center" style="width: 80px;">Posición</th>
+                            <th>Estudiante</th>
+                            <th class="text-center">Créditos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for estudiante in ranking %}
+                            <tr>
+                                <td class="text-center">
+                                    {% if estudiante.numero == 1 %}
+                                        🥇
+                                    {% elif estudiante.numero == 2 %}
+                                        🥈
+                                    {% elif estudiante.numero == 3 %}
+                                        🥉
+                                    {% else %}
+                                        {{ estudiante.numero }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ estudiante.nombre }}</strong>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary fs-6">{{ estudiante.creditos }}</span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info m-0">
+                <p class="mb-0">No hay estudiantes registrados aún.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Botón de regreso -->
+<div class="text-center mt-4">
+    <a href="{% url 'profesor_inicio' %}" class="btn btn-secondary">
+        ← Volver al Panel
+    </a>
+</div>
+{% endblock %}

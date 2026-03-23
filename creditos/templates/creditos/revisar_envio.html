@@ -1,0 +1,156 @@
+{% extends "creditos/base.html" %}
+
+{% block title %}Revisar Envío {% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    {% if envio.tipo == 'rectificacion' %}📝 Rectificación
+                    {% elif envio.tipo == 'cp' %}📚 Ejercicio CP
+                    {% else %}😂 Meme{% endif %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-muted">De: <strong>{{ envio.estudiante.get_full_name|default:envio.estudiante.username }}</strong></h6>
+                    <small class="text-secondary">Enviado: {{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                </div>
+
+                {% if envio.tipo == 'cp' %}
+                    <div class="alert alert-info">
+                        <strong>CP:</strong> {{ envio.numero_cp }}<br>
+                        <strong>Ejercicio:</strong> {{ envio.numero_ejercicio }}
+                    </div>
+                    
+                    {% if envio.pdf %}
+                        <div class="mb-3">
+                            <a href="{{ envio.pdf.url }}" class="btn btn-primary" target="_blank">
+                                📄 Descargar PDF
+                            </a>
+                        </div>
+                    {% endif %}
+                {% elif envio.tipo == 'rectificacion' %}
+                    <div class="card bg-light mb-3">
+                        <div class="card-body">
+                            <h6>Contexto:</h6>
+                            <p>{{ envio.contexto_rectificacion|default:"No especificado" }}</p>
+                            {% if envio.envio_corregido %}
+                                <h6>Envío corregido:</h6>
+                                <p>{{ envio.envio_corregido.get_tipo_display }} de {{ envio.envio_corregido.fecha_envio|date:"d/m/Y" }}</p>
+                            {% endif %}
+                            {% if envio.documento_rectificacion %}
+                                <h6>Documento adjunto:</h6>
+                                <a href="{{ envio.documento_rectificacion.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    📄 Descargar documento
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if envio.tipo == 'meme' and envio.imagen %}
+                    <div class="mb-3">
+                        <img src="{{ envio.imagen.url }}" class="img-fluid rounded" alt="Meme" style="max-height: 400px;">
+                    </div>
+                {% endif %}
+
+                {% if envio.descripcion %}
+                    <div class="card bg-light">
+                        <div class="card-body">
+                            <h6>Descripción:</h6>
+                            <p>{{ envio.descripcion }}</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">✅ Revisión</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            {{ form.aceptado }}
+                            <label class="form-check-label" for="{{ form.aceptado.id_for_label }}">
+                                Aceptar este envío
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.creditos_otorgados.id_for_label }}" class="form-label">
+                            <strong>Créditos a Otorgar</strong>
+                        </label>
+                        {{ form.creditos_otorgados }}
+                        {% if valor_defecto %}
+                            <small class="text-muted d-block mt-2">
+                                Valor por defecto: <strong>{{ valor_defecto }}</strong>
+                            </small>
+                        {% else %}
+                            <small class="text-muted d-block mt-2">
+                                Valor por defecto: <strong>10000</strong>
+                            </small>
+                        {% endif %}
+                        {% if form.creditos_otorgados.errors %}
+                            <div class="text-danger small mt-2">
+                                {% for error in form.creditos_otorgados.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.comentarios.id_for_label }}" class="form-label">
+                            Comentarios
+                        </label>
+                        {{ form.comentarios }}
+                        {% if form.comentarios.errors %}
+                            <div class="text-danger small mt-2">
+                                {% for error in form.comentarios.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-custom">
+                            ✅ Guardar Revisi
+ón
+                        </button>
+                        <a href="{% url 'profesor_inicio' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger mt-3">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-3">
+            <h6 class="alert-heading">💡 Guía de Revisión:</h6>
+            <small>
+                <ul class="mb-0">
+                    <li>Marca "Aceptar" si el envío es válido</li>
+                    <li>Ingresa los créditos a otorgar</li>
+                    <li>Puedes añadir comentarios opcionales</li>
+                </ul>
+            </small>
+        </div>
+    </div>
+</div>
+{% endblock %}

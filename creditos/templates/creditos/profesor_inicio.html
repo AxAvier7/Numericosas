@@ -1,0 +1,202 @@
+{% extends "creditos/base.html" %}
+
+{% block title %}Panel de Profesor {% endblock %}
+
+{% block content %}
+<div class="hero bg-dark">
+    <h1>📚 Panel del Profesor</h1>
+    <p>Revisa y aprueba los envíos de estudiantes</p>
+</div>
+
+<!-- Resumen de pendientes -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-left-primary">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Total Pendientes</h6>
+                <h2 class="text-primary">{{ total_pendientes }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-left-warning">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Rectificaciones</h6>
+                <h2 class="text-warning">{{ rectificaciones.count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-left-info">
+            <div class="card-body">
+                <h6 class="card-title text-muted">Ejercicios CP</h6>
+                <h2 class="text-info">{{ ejercicios_cp.count }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones adicionales -->
+<div class="text-center mb-4">
+    <a href="{% url 'ranking_estudiantes' %}" class="btn btn-success btn-lg">
+        🏆 Ver Ranking de Estudiantes
+    </a>
+    <a href="{% url 'historial_revisiones' %}" class="btn btn-outline-primary btn-lg ms-2">
+        📋 Historial de Revisiones
+    </a>
+</div>
+
+<!-- Tabs para diferentes tipos -->
+<div class="card">
+    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="todos-tab" data-bs-toggle="tab" data-bs-target="#todos" type="button">
+                📋 Todos ({{ total_pendientes }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="rectificaciones-tab" data-bs-toggle="tab" data-bs-target="#rectificaciones">
+                📝 Rectificaciones ({{ rectificaciones.count }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="cp-tab" data-bs-toggle="tab" data-bs-target="#cp">
+                📚 CP ({{ ejercicios_cp.count }})
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="memes-tab" data-bs-toggle="tab" data-bs-target="#memes">
+                😂 Memes ({{ memes.count }})
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- Todos -->
+        <div class="tab-pane fade show active" id="todos" role="tabpanel">
+            {% with total_count=rectificaciones.count|add:ejercicios_cp.count|add:memes.count %}
+                {% if total_count > 0 %}
+                    <div class="list-group list-group-flush">
+                        {% for envio in rectificaciones %}
+                            <a href="{% url 'revisar_envio' envio.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">📝 Rectificación por <strong>{{ envio.estudiante.get_full_name|default:envio.estudiante.username }}</strong></h6>
+                                        <p class="mb-1 text-muted">{{ envio.descripcion|truncatewords:15 }}</p>
+                                        <small class="text-secondary">{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    <span class="badge bg-warning">📝</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+
+                        {% for envio in ejercicios_cp %}
+                            <a href="{% url 'revisar_envio' envio.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">📚 CP por <strong>{{ envio.estudiante.get_full_name|default:envio.estudiante.username }}</strong></h6>
+                                        <p class="mb-1 text-muted">CP {{ envio.numero_cp }} - Ejercicio {{ envio.numero_ejercicio }}</p>
+                                        <small class="text-secondary">{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    <span class="badge bg-info">📚</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+
+                        {% for envio in memes %}
+                            <a href="{% url 'revisar_envio' envio.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">😂 Meme por <strong>{{ envio.estudiante.get_full_name|default:envio.estudiante.username }}</strong></h6>
+                                        <p class="mb-1 text-muted">{{ envio.descripcion|default:"Sin descripción"|truncatewords:15 }}</p>
+                                        <small class="text-secondary">{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    <span class="badge bg-secondary">😂</span>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-success m-0">
+                        <p class="mb-0">✅ ¡No hay envíos pendientes! Todo está al día.</p>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <!-- Rectificaciones -->
+        <div class="tab-pane fade" id="rectificaciones" role="tabpanel">
+            {% if rectificaciones %}
+                <div class="list-group list-group-flush">
+                    {% for envio in rectificaciones %}
+                        <a href="{% url 'revisar_envio' envio.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ envio.estudiante.get_full_name|default:envio.estudiante.username }}</h6>
+                                    <p class="mb-1 text-muted">{{ envio.descripcion|truncatewords:15 }}</p>
+                                    <small class="text-secondary">{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info m-0">
+                    No hay rectificaciones pendientes.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- CP -->
+        <div class="tab-pane fade" id="cp" role="tabpanel">
+            {% if ejercicios_cp %}
+                <div class="list-group list-group-flush">
+                    {% for envio in ejercicios_cp %}
+                        <a href="{% url 'revisar_envio' envio.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ envio.estudiante.get_full_name|default:envio.estudiante.username }} - CP {{ envio.numero_cp }}, Ej. {{ envio.numero_ejercicio }}</h6>
+                                    <small class="text-secondary">{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info m-0">
+                    No hay ejercicios CP pendientes.
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Memes -->
+        <div class="tab-pane fade" id="memes" role="tabpanel">
+            {% if memes %}
+                <div class="list-group list-group-flush">
+                    {% for envio in memes %}
+                        <a href="{% url 'revisar_envio' envio.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="mb-1">{{ envio.estudiante.get_full_name|default:envio.estudiante.username }}</h6>
+                                    <p class="mb-1 text-muted">{{ envio.descripcion|default:"Meme sin descripción"| truncatewords:15 }}</p>
+                                    <small class="text-secondary">{{ envio.fecha_envio|date:"d/m/Y H:i" }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info m-0">
+                    No hay memes pendientes.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'historial_revisiones' %}" class="btn btn-outline-primary btn-custom">
+        📋 Ver Historial de Revisiones
+    </a>
+</div>
+{% endblock %}

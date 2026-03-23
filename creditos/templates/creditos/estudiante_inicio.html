@@ -1,0 +1,107 @@
+{% extends "creditos/base.html" %}
+{% load custom_filters %}
+
+{% block title %}Inicio - Estudiante{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>¡Bienvenido, {{ user.get_full_name|default:user.username }}! 👋</h1>
+    <p>Gestiona tus envíos y sigue tu progreso en el sistema de créditos</p>
+</div>
+
+<!-- Estadísticas -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">💰 Créditos Totales</h5>
+                <h2 class="text-primary">{{ perfil.creditos|format_credits }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">⏳ Envíos Pendientes</h5>
+                <h2 class="text-warning">{{ envios_pendientes }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">✅ Envíos Aceptados</h5>
+                <h2 class="text-success">{{ envios_aceptados }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Opciones de Envío -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">📝 Rectificación</h5>
+                <p class="text-muted mb-3">Enviar rectificación de un ejercicio</p>
+                <a href="{% url 'enviar_rectificacion' %}" class="btn btn-primary btn-custom">Enviar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">📚 CP</h5>
+                <p class="text-muted mb-3">Enviar ejercicio CP con PDF</p>
+                <a href="{% url 'enviar_cp' %}" class="btn btn-info btn-custom text-white">Enviar</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title mb-3">😂 Meme</h5>
+                <p class="text-muted mb-3">Compartir un meme para ganar créditos</p>
+                <a href="{% url 'enviar_meme' %}" class="btn btn-success btn-custom">Enviar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ranking -->
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">🏆 Mi Posición en el Ranking</h5>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        {% if ranking %}
+            {% for item in ranking %}
+                <div class="ranking-item {% if item.es_actual %}actual{% endif %}">
+                    <span class="ranking-numero">{{ item.numero }}.</span>
+                    <span class="ranking-nombre">{{ item.nombre }}</span>
+                    <span class="ranking-creditos">{{ item.creditos }}</span>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-muted text-center py-4">No hay datos de ranking disponibles</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="text-center mt-4">
+    <a href="{% url 'historial_envios' %}" class="btn btn-outline-primary btn-custom">Ver Todos mis Envíos</a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Agregar filtro personalizado para regexreplace
+    // En este caso, usaremos JavaScript para formatear los créditos
+    document.querySelectorAll('.ranking-creditos').forEach(el => {
+        const value = parseInt(el.textContent);
+        if (!isNaN(value)) {
+            el.textContent = value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+        }
+    });
+</script>
+{% endblock %}

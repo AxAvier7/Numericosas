@@ -1,0 +1,87 @@
+{% extends "creditos/base.html" %}
+
+{% block title %}Historial de Revisiones {% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📋 Historial de Revisiones Realizadas</h2>
+
+{% if revisiones %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Tipo</th>
+                    <th>Estudiante</th>
+                    <th>Fecha</th>
+                    <th>Resultado</th>
+                    <th>Créditos</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for revision in revisiones %}
+                    <tr>
+                        <td>
+                            {% if revision.envio.tipo == 'rectificacion' %}
+                                <span class="envio-tipo envio-rectificacion">📝 Rectificación</span>
+                            {% elif revision.envio.tipo == 'cp' %}
+                                <span class="envio-tipo envio-cp">📚 CP</span>
+                            {% else %}
+                                <span class="envio-tipo envio-meme">😂 Meme</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ revision.envio.estudiante.get_full_name|default:revision.envio.estudiante.username }}</strong>
+                        </td>
+                        <td>
+                            <small>{{ revision.fecha_revision|date:"d/m/Y H:i" }}</small>
+                        </td>
+                        <td>
+                            {% if revision.aceptado %}
+                                <span class="badge bg-success">✅ Aceptado</span>
+                            {% else %}
+                                <span class="badge bg-danger">❌ Rechazado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ revision.creditos_otorgados }}</strong>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card mt-4 bg-light">
+        <div class="card-body">
+            <h6>Estadísticas de Revisiones:</h6>
+            <ul class="mb-0">
+                <li>Total revisiones realizadas: <strong>{{ revisiones.count }}</strong></li>
+                <li>Aceptadas: <strong>{% regroup revisiones by aceptado as group_list %}{% for group in group_list %}{% if group.grouper %}{{ group.list.count }}{% endif %}{% endfor %}</strong></li>
+                <li>Rechazadas: <strong>{% regroup revisiones by aceptado as group_list %}{% for group in group_list %}{% if not group.grouper %}{{ group.list.count }}{% endif %}{% endfor %}</strong></li>
+                <li>Créditos totales otorgados: <strong>
+                    {% with total_creditos=0 %}
+                        {% for revision in revisiones %}
+                            {% if revision.aceptado %}{% widthratio 1 1 1 %}{% endif %}
+                        {% endfor %}
+                        {% for revision in revisiones %}{{ revision.creditos_otorgados }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                    {% endwith %}
+                </strong></li>
+            </ul>
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-info text-center py-5">
+        <h5>📭 No hay revisiones realizadas</h5>
+        <p>Las revisiones que realices aparecerán aquí.</p>
+        <a href="{% url 'profesor_inicio' %}" class="btn btn-primary btn-custom">
+            Volver al Panel
+        </a>
+    </div>
+{% endif %}
+
+<div class="mt-4">
+    <a href="{% url 'profesor_inicio' %}" class="btn btn-outline-primary btn-custom">
+        ← Volver al Panel
+    </a>
+</div>
+{% endblock %}
