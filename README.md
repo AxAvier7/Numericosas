@@ -66,27 +66,6 @@ Accede a `http://localhost:8000` en tu navegador.
 - **Usuario:** profesor1
 - **Contraseña:** 1234
 
-## 📁 Estructura del Proyecto
-
-```
-.
-├── creditos/                    # Aplicación principal
-│   ├── migrations/             # Migraciones de base de datos
-│   ├── management/commands/    # Comandos personalizados
-│   ├── templates/creditos/     # Plantillas HTML
-│   ├── models.py              # Modelos de Django
-│   ├── views.py               # Vistas principales
-│   ├── forms.py               # Formularios
-│   ├── urls.py                # URLs de la app
-│   └── admin.py               # Configuración de admin
-├── myproject/                 # Configuración del proyecto
-│   ├── settings.py           # Configuración
-│   ├── urls.py               # URLs principales
-│   └── wsgi.py               # Configuración WSGI
-├── manage.py                 # Script de management
-└── requirements.txt          # Dependencias
-```
-
 ## 🗄️ Modelos de Base de Datos
 
 ### Perfil
@@ -182,53 +161,6 @@ Accede a `http://localhost:8000/admin/` con credenciales de admin.
 
 Los profesores pueden modificar manualmente los valores de los incisos en la sección de admin.
 
-## 📚 Comandos Útiles
-
-```bash
-# Ver todas las URL disponibles
-python manage.py show_urls
-
-# Crear un superusuario
-python manage.py createsuperuser
-
-# Acceder a la shell de Django
-python manage.py shell
-
-# Limpiar la base de datos (cuidado)
-python manage.py flush
-
-# Crear una copia de seguridad de datos
-python manage.py dumpdata > backup.json
-
-# Restaurar desde copia de seguridad
-python manage.py loaddata backup.json
-```
-
-## 🐛 Solución de Problemas
-
-### Error: "Port 8000 is already in use"
-```bash
-python manage.py runserver 8001
-```
-
-### Error: "Table does not exist"
-```bash
-python manage.py migrate
-```
-
-### Error: "ModuleNotFoundError"
-```bash
-pip install -r requirements.txt
-```
-
-## 🤝 Contribuciones
-
-Para contribuir al proyecto, por favor:
-1. Hacer fork
-2. Crear una rama para tu feature
-3. Commit de tus cambios
-4. Push a la rama
-5. Abrir un Pull Request
 
 ## 📄 Licencia
 
