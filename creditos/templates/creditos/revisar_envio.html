@@ -79,7 +79,7 @@
                     {% csrf_token %}
 
                     <div class="mb-3">
-                        <div class="form-check">
+                        <div class="form-check form-check-accept">
                             {{ form.aceptado }}
                             <label class="form-check-label" for="{{ form.aceptado.id_for_label }}">
                                 Aceptar este envío
@@ -122,8 +122,7 @@
 
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-success btn-custom">
-                            ✅ Guardar Revisi
-ón
+                            ✅ Guardar Revisión
                         </button>
                         <a href="{% url 'profesor_inicio' %}" class="btn btn-outline-secondary">
                             Cancelar
