@@ -1,0 +1,27 @@
+[project]
+name = "numericosas"
+version = "0.1.0"
+description = "Inventario y seguimiento de la actividad de estudiantes en canales de Telegram"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "openpyxl>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+]
+
+[project.scripts]
+numericosas = "numericosas.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["numericosas*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Datos de estudiantes: nunca al repo
+data/raw/*
+!data/raw/.gitkeep
+data/*.sqlite
+data/*.sqlite-*
+data/*.db
+
+# Salidas generadas
+out/*
+!out/.gitkeep
+*.xlsx
+*.pdf
+
+# Credenciales de Telegram
+*.session
+*.session-journal
+.env
